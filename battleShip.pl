@@ -95,7 +95,7 @@ sizeAux([_|[X|Y]],N,Ac) :-
 %mensajeBienvenida:- Imprime en pantalla un mensaje que da la bienvenida al
 %                    usuario, e indica el comienzo del juego.
 mensajeBienvenida :- write('                                     |__'),nl,
-    write('                                     |\\/'),nl,
+    write('                                     |/'),nl,
     write('                                     ---'),nl,
     write('                                     / | ['),nl,
     write('                              !      | |||'),nl,
@@ -602,7 +602,7 @@ hacerJugadas(B,T0,T1,F,C):-
     hacerJugadas(B1,T1,T2,F,C).
 
 backtracking(T,B) :-
-    %hacerHits(T,T1,B,B1),
+    hacerHits(T,T1,B,B1),
     juego(F,C,_,_),
     hacerJugadas(B1,T1,_,F,C).
 
