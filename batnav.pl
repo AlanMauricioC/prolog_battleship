@@ -20,22 +20,22 @@ crearTablero:-
 					write("PC tablero"),nl,
 					mostrarTablero(X),
 					write('10 proyectiles disponibles: '),nl,
-					write("Inicias tú o PC? Tú:2 PC:1"),nl,
+					write("Inicias tu o PC? Tu:2 PC:1"),
 					read(Usuario),
 					%T= usuario X=PC
-					((Usuario=1),juegaPC(10,T,X),juegaUsuario(10,T,X)).
+					(Usuario=1->juegaPC(10,T,X);juegaUsuario(10,T,X)).
 
 juegaPC(0,_,_):-write('Se terminaron las balas'),nl.
 juegaPC(C,T,X):-C1 is C-1,
-	write(C),
-	dispara(T,T1),
+	write(C),ln,
 	disparaPC(X,X1),
+	dispara(T,T1),
 	juegaPC(C1,T1,X1).
 
 juegaUsuario(0,_,_):-write('Se terminaron las balas'),nl.
 juegaUsuario(C,T,X):-C1 is C-1,
-	disparaPC(T,T1),
 	dispara(X,X1),
+	disparaPC(T,T1),
 	juegaUsuario(C1,T1,X1).
 				
 %------------ Crea tablero inicial (todas las posiciones son agua) ------------%
@@ -86,8 +86,10 @@ dispara(T,Tsalida):-
 	mostrarTablero(Tsalida).
 
 disparaPC(T,Tsalida):-
-	write('Fila: '), read(Fil),%numeros aleatorios, que estén en el rango
-	write('Columna: '), read(Col),%numeros aleatorios, que estén en el rango
+	nb_getval(filas, M),
+	nb_getval(columnas, N),
+	write('Fila: '), random(0,M,Fil), write(Fil),nl,%numeros aleatorios, que estén en el rango
+	write('Columna: '), random(0,N,Col),write(Col),nl,%numeros aleatorios, que estén en el rango
 	colocarH(Fil,Col,1,'_',T,Tsalida),
 	mostrarTablero(Tsalida).
 		
@@ -95,7 +97,7 @@ disparaPC(T,Tsalida):-
 herido(A,B,Con):-
 	nb_getval(puntos, Puntos),
 	Pun is Puntos+1,
-	nb_getval(puntos, Pun),
+	nb_setval(puntos, Pun),
 	write('le has dado a uno de mis barcos, tienes: '),write(Pun),write(" Puntos"),nl,
 	(puntos == 8 -> write('Ganaste. Has undido todos mis barcos :(')),nl,
 	Fam = disparos([A,B]),
