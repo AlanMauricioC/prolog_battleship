@@ -27,15 +27,15 @@ crearTablero:-
 
 juegaPC(0,_,_):-write('Se terminaron las balas'),nl.
 juegaPC(C,T,X):-C1 is C-1,
-	write(C),
-	dispara(T,X,T1),
+	write(C),write(" Balas restantes"),nl,
 	disparaPC(T,X,X1),
+	dispara(T,X,T1),
 	juegaPC(C1,T1,X1).
 
 juegaUsuario(0,_,_):-write('Se terminaron las balas'),nl.
 juegaUsuario(C,T,X):-C1 is C-1,
-	disparaPC(T,X,T1),
 	dispara(T,X,X1),
+	disparaPC(T,X,T1),
 	juegaUsuario(C1,T1,X1).
 				
 %------------ Crea tablero inicial (todas las posiciones son agua) ------------%
@@ -85,24 +85,26 @@ dispara(T,X,Tsalida):-
 	%Le di?
 	nth0(Fil,X,Temp1),
 	nth0(Col,Temp1,Temp2),
-	write(Temp2),
-	((Temp2='a'),falla(Fil,Col,T,T1),herido()),
+	(Temp2='a'->falla(Fil,Col,T,Tsalida);herido(Fil,Col,T,Tsalida)),
 	mostrarTablero(Tsalida).
 
-disparaPC(T,Tsalida):-
+disparaPC(T,X,Tsalida):-
 	nb_getval(filas, M),
 	nb_getval(columnas, N),
 	write('Fila: '), random(0,M,Fil), write(Fil),nl,%numeros aleatorios, que estén en el rango
 	write('Columna: '), random(0,N,Col),write(Col),nl,%numeros aleatorios, que estén en el rango
-	colocarH(Fil,Col,1,'_',T,Tsalida),
+	nth0(Fil,T,Temp1),
+	nth0(Col,Temp1,Temp2),
+	(Temp2='a'->falla(Fil,Col,X,Tsalida);herido(Fil,Col,X,Tsalida)),
 	mostrarTablero(Tsalida).
 		
 		
-herido(A,B,Con):-
+herido(Fil,Col,T,T1):-
 	nb_getval(puntos, Puntos),
 	Pun is Puntos+1,
 	nb_setval(puntos, Pun),
 	write('le has dado a uno de mis barcos, tienes: '),write(Pun),write(" Puntos"),nl,
+	colocarH(Fil,Col,1,'a',T,T1),
 	(puntos == 8 -> write('Ganaste. Has undido todos mis barcos :')).
 	
 falla(Fil,Col,T,T1):-
