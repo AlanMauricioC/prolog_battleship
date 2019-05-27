@@ -97,16 +97,17 @@ falla(Fil,Col,T,T1):-
 	write('Ni un poco cerca'),nl.
 
 %ataque contra un barco enemigo
-choque(S,[R|_],R1):-S=='|',R \= 'a',R1 = 'X'.
-choque(S,[R|_],R1):-S=='|',R == 'a',R1 = '*'.
+choque(S,[R|_],R1):-S=='|',R \= 'a',R1 = 'X',write("Term").
+choque(S,[R|_],R1):-S=='|',R == 'a',R1 = '*',write("Term").
 %ataque contra tu barco
-choque(S,_,R1):-S=='-',R1 = S.
+choque(S,_,R1):-S=='-',R1 = S,write("Term").
 %impresipon normal
-choque(S,_,R1):-R1 = S.
+choque(S,[R|_],R1):-R1 = S,write(E),write("Term")
+.
 
 % S indica el valor a insertar en el tablero
 %funcion auxiliar para modificar valores en el tablero
-modificar_lista(0,S,[_|R],[S|R]).
+modificar_lista(0,S,[_|R],[X|R]):-choque(S,R,X),nl.
 modificar_lista(N,S,[E|R],[E|L]):- N1 is N-1, choque(S,R,X),nl,
 									modificar_lista(N1, X, R, L).
 %coloca los barcos ya sea horizontal o verticalmente 
