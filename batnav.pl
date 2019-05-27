@@ -85,27 +85,28 @@ dispara(T,X,Tsalida):-
 	%Le di?
 	nth0(Fil,X,Temp1),
 	nth0(Col,Temp1,Temp2),
-	(Temp2='a'->falla(Fil,Col,T,Tsalida);herido(Fil,Col,T,Tsalida)),
+	(Temp2='a'->falla(Fil,Col,T,Tsalida);herido(Fil,Col,X,Tsalida)),
 	mostrarTablero(Tsalida).
 
 disparaPC(T,X,Tsalida):-
+	write("PC juega ::::::::::::::::::::::"),nl,
 	nb_getval(filas, M),
 	nb_getval(columnas, N),
 	write('Fila: '), random(0,M,Fil), write(Fil),nl,%numeros aleatorios, que estén en el rango
 	write('Columna: '), random(0,N,Col),write(Col),nl,%numeros aleatorios, que estén en el rango
 	nth0(Fil,T,Temp1),
 	nth0(Col,Temp1,Temp2),
-	(Temp2='a'->falla(Fil,Col,X,Tsalida);herido(Fil,Col,X,Tsalida)),
-	mostrarTablero(Tsalida).
-		
+	(Temp2='a'->falla(Fil,Col,X,Tsalida);herido(Fil,Col,T,Tsalida)).
+	%mostrarTablero(Tsalida).
+
 		
 herido(Fil,Col,T,T1):-
 	nb_getval(puntos, Puntos),
 	Pun is Puntos+1,
 	nb_setval(puntos, Pun),
 	write('le has dado a uno de mis barcos, tienes: '),write(Pun),write(" Puntos"),nl,
-	colocarH(Fil,Col,1,'a',T,T1),
-	(puntos == 8 -> write('Ganaste. Has undido todos mis barcos :')).
+	(Pun = 8->write("Has ganado");nl),
+	colocarH(Fil,Col,1,'-',T,T1).
 	
 falla(Fil,Col,T,T1):-
 	colocarH(Fil,Col,1,'|',T,T1),
@@ -113,7 +114,7 @@ falla(Fil,Col,T,T1):-
 
 %ataque contra un barco enemigo | indica que es un usuario quien lo llama _ indica PC
 %indica que le dí a algo que no es awa
-choque(S,[R|_],R1):-S=='|',R \= 'a',R1 = S.
+choque(S,[R|_],R1):-S=='|',R \= 'a',R1 = 'X'.
 choque(S,[R|_],R1):-S=='|',R == 'a',R1 = '*'.
 %ataque contra tu barco
 choque(S,_,R1):-S=='-',R1 = S.
