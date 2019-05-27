@@ -15,7 +15,7 @@ crearTablero:-
 					crearBarcos(B,L,T),
 					mostrarTablero(T),
 					write('10 proyectiles disponibles: '),nl,
-					dispara(10).
+					dispara(10,T).
 					
 %------------ Crea tablero inicial (todas las posiciones son agua) ------------%
 tableroInicial(M,N,T):-crearT_aux(M,N,[],T), mostrarTablero(T).
@@ -46,7 +46,8 @@ crearBarcos(N,L,T):- N1 is N-1,
 							crearBarcos(N1,A,T).
 %------------------ función para que se dispare -----------------------%
 
-dispara(C):-
+dispara(0,T).
+dispara(C,T):-
 	C1 is C-1,
 	(C == 0 ->  
 		write('Se terminaron las balas'); 
@@ -57,25 +58,27 @@ dispara(C):-
 				herido(Fil,Col,C1) ; 
 				(Col == 5 -> 
 					herido(Fil,Col,C1); 
-					falla(C1))
+				falla(Fil,Col,T,T1))
 			);
 			(Fil == 5 -> 
 				(Col == 0 -> 
-					falla(C1); 
+					falla(Fil,Col,T,T1);
 					(Col == 1 -> 
-						falla(C1); 
+						falla(Fil,Col,T,T1);
 						(Col == 6 -> 
-							falla(C1); 
+							falla(Fil,Col,T,T1);
 							(Col == 9 -> 
-								falla(C1); 
+								falla(Fil,Col,T,T1);
 								herido(Fil,Col,C1)
 							)
 						)
 					)
 				); 
-				falla(C1)
+				falla(Fil,Col,T,T1)
 			)
-		)).
+		)),
+		mostrarTablero(T1),
+		dispara(C1,T1).
 		
 		
 		
@@ -89,6 +92,40 @@ herido(A,B,Con):-
 	findall(C, (disparos(C)), L), write(L), nl,
 	dispara(Con).
 	
-falla(Con):-
-	write('Ni un poco cerca'),nl,
-	dispara(Con).
+falla(Fil,Col,T,T1):-
+	colocarH(Fil,Col,1,'|',T,T1),
+	write('Ni un poco cerca'),nl.
+
+%ataque contra un barco enemigo
+choque(S,[R|_],R1):-S=='|',R \= 'a',R1 = 'X'.
+choque(S,[R|_],R1):-S=='|',R == 'a',R1 = '*'.
+%ataque contra tu barco
+choque(S,_,R1):-S=='-',R1 = S.
+%impresipon normal
+choque(S,_,R1):-R1 = S.
+
+% S indica el valor a insertar en el tablero
+%funcion auxiliar para modificar valores en el tablero
+modificar_lista(0,S,[_|R],[S|R]).
+modificar_lista(N,S,[E|R],[E|L]):- N1 is N-1, choque(S,R,X),nl,
+									modificar_lista(N1, X, R, L).
+%coloca los barcos ya sea horizontal o verticalmente 
+colocarB('h',Fini,Cini,Tam,N,L,T):- colocarH(Fini,Cini,Tam,N,L,T).
+colocarB('v',Fini,Cini,Tam,N,L,T):- colocarV(Fini,Cini,Tam,N,L,T).
+%colocar barcos horizontales
+colocarH_aux(_,0,_,T,T).	
+colocarH_aux(C,Tam,S,E,L):-  	Tam>0,
+										modificar_lista(C,S,E,L2),
+										Tam1 is Tam-1, 
+										C1 is C+1,
+										colocarH_aux(C1,Tam1,S,L2,L).
+colocarH(0,C,Tam,S,[E|R],[L|R]):- Tam>0, colocarH_aux(C,Tam,S,E,L).
+colocarH(N,C,Tam,S,[E|R],[E|P]):- N1 is N-1, colocarH(N1,C,Tam,S,R,P).
+%colocar barcos verticales
+colocarV_aux(C,1,S,[E|R],[L|R]):- 		modificar_lista(C,S,E,L).
+colocarV_aux(C,Tam,S,[E|R],[L|P]):- 	Tam>0, modificar_lista(C,S,E,L),
+													N is Tam-1,
+													colocarV_aux(C,N,S,R,P).
+colocarV(0,C,Tam,S,[E|R],[L|P]):- colocarV_aux(C,Tam,S,[E|R],[L|P]).
+colocarV(N,C,Tam,S,[E|R],[E|P]):- 	N1 is N-1, 
+												colocarV(N1,C,Tam,S,R,P).
