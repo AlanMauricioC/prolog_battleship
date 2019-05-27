@@ -1,6 +1,7 @@
 :- dynamic(disparos/1).
 :- dynamic(disparospc/1).
-
+:- dynamic (barco /7).
+:- dynamic (cantidad_barco /1).
 %--------------localización de barcos -----------------------%
 
 jugar:- crearTablero.
@@ -13,7 +14,11 @@ crearTablero:-
 					assert(cantidad_barco(B)),
 					tableroInicial(M,N,L),
 					crearBarcos(B,L,T),
+					generarTableroPC(L,X),
+					write("Tu tablero"),nl,
 					mostrarTablero(T),
+					write("PC tablero"),nl,
+					mostrarTablero(X),
 					write('10 proyectiles disponibles: '),nl,
 					dispara(10,T).
 					
@@ -44,9 +49,21 @@ crearBarcos(N,L,T):- N1 is N-1,
 							assert(barco(N,Tam,Dir,Fini,Cini,0,'f')),						
 							colocarB(Dir,Fini,Cini,Tam,N,L,A),
 							crearBarcos(N1,A,T).
+
+%---------------------Tablero PC----------------------------------------%
+% colocarb |dirección|fila inicial|columna inicial| tamaño| nombre| tablero de entrada| tablero de salida
+generarTableroPC(Entrada,Salida):-
+	colocarB('h',5,5,2,1,Entrada,Tmp1),
+	colocarB('h',3,5,2,2,Tmp1,Tmp2),
+	colocarB('v',1,5,2,3,Tmp2,Tmp3),
+	colocarB('v',5,0,2,4,Tmp3,Tmp4),
+	colocarB('v',6,1,2,5,Tmp4,Salida).
+	
+
+
 %------------------ función para que se dispare -----------------------%
 
-dispara(0,T).
+dispara(0,_).
 dispara(C,T):-
 	C1 is C-1,
 	(C == 0 ->  
@@ -85,7 +102,8 @@ dispara(C,T):-
 herido(A,B,Con):-
 	nb_getval(puntos, Puntos),
 	Pun is Puntos+1,
-	write('le has dado a uno de mis barcos'),nl,
+	nb_getval(puntos, Pun),
+	write('le has dado a uno de mis barcos, tienes: '),write(Pun),write(" Puntos"),nl,
 	(puntos == 8 -> write('Ganaste. Has undido todos mis barcos :(')),nl,
 	Fam = disparos([A,B]),
 	asert(Fam),
