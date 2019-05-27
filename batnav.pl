@@ -5,8 +5,8 @@
 
 jugar:- crearTablero.
 crearTablero:- 
-					write('Num. de Filas(5 o 10): '),read(M), nb_setval(filas, M),
-					write('Num. de Columnas(5 o 10): '),read(N), nb_setval(columnas, N),
+					write('Num. de Filas(10 o 15): '),read(M), nb_setval(filas, M),
+					write('Num. de Columnas(10 o 15): '),read(N), nb_setval(columnas, N),
 					write('Cant. de Barcos: '),read(B),
 					nb_setval(puntos, 0),
 					nb_setval(pc, 0),
@@ -57,23 +57,23 @@ dispara(C):-
 				herido(Fil,Col,C1) ; 
 				(Col == 5 -> 
 					herido(Fil,Col,C1); 
-					falla())
+					falla(C1))
 			);
 			(Fil == 5 -> 
 				(Col == 0 -> 
-					falla(); 
+					falla(C1); 
 					(Col == 1 -> 
-						falla(); 
+						falla(C1); 
 						(Col == 6 -> 
-							falla(); 
+							falla(C1); 
 							(Col == 9 -> 
-								falla(); 
+								falla(C1); 
 								herido(Fil,Col,C1)
 							)
 						)
 					)
 				); 
-				falla()
+				falla(C1)
 			)
 		)).
 		
@@ -89,5 +89,6 @@ herido(A,B,Con):-
 	findall(C, (disparos(C)), L), write(L), nl,
 	dispara(Con).
 	
-falla():-
-	write('Ni un poco cerca'),nl.
+falla(Con):-
+	write('Ni un poco cerca'),nl,
+	dispara(Con).
