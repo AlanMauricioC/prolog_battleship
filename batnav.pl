@@ -27,15 +27,15 @@ crearTablero:-
 
 juegaPC(0,_,_):-write('Se terminaron las balas'),nl.
 juegaPC(C,T,X):-C1 is C-1,
-	write(C),ln,
-	disparaPC(X,X1),
-	dispara(T,T1),
+	write(C),
+	dispara(T,X,T1),
+	disparaPC(T,X,X1),
 	juegaPC(C1,T1,X1).
 
 juegaUsuario(0,_,_):-write('Se terminaron las balas'),nl.
 juegaUsuario(C,T,X):-C1 is C-1,
-	dispara(X,X1),
-	disparaPC(T,T1),
+	disparaPC(T,X,T1),
+	dispara(T,X,X1),
 	juegaUsuario(C1,T1,X1).
 				
 %------------ Crea tablero inicial (todas las posiciones son agua) ------------%
@@ -79,10 +79,14 @@ generarTableroPC(Entrada,Salida):-
 
 %------------------ función para que se dispare -----------------------%
 
-dispara(T,Tsalida):-
+dispara(T,X,Tsalida):-
 	write('Fila: '), read(Fil),
 	write('Columna: '), read(Col),
-	colocarH(Fil,Col,1,'|',T,Tsalida),
+	%Le di?
+	nth0(Fil,X,Temp1),
+	nth0(Col,Temp1,Temp2),
+	write(Temp2),
+	((Temp2='a'),falla(Fil,Col,T,T1),herido()),
 	mostrarTablero(Tsalida).
 
 disparaPC(T,Tsalida):-
@@ -99,18 +103,15 @@ herido(A,B,Con):-
 	Pun is Puntos+1,
 	nb_setval(puntos, Pun),
 	write('le has dado a uno de mis barcos, tienes: '),write(Pun),write(" Puntos"),nl,
-	(puntos == 8 -> write('Ganaste. Has undido todos mis barcos :(')),nl,
-	Fam = disparos([A,B]),
-	asert(Fam),
-	findall(C, (disparos(C)), L), write(L), nl,
-	dispara(Con).
+	(puntos == 8 -> write('Ganaste. Has undido todos mis barcos :')).
 	
 falla(Fil,Col,T,T1):-
 	colocarH(Fil,Col,1,'|',T,T1),
 	write('Ni un poco cerca'),nl.
 
-%ataque contra un barco enemigo
-choque(S,[R|_],R1):-S=='|',R \= 'a',R1 = 'X'.
+%ataque contra un barco enemigo | indica que es un usuario quien lo llama _ indica PC
+%indica que le dí a algo que no es awa
+choque(S,[R|_],R1):-S=='|',R \= 'a',R1 = S.
 choque(S,[R|_],R1):-S=='|',R == 'a',R1 = '*'.
 %ataque contra tu barco
 choque(S,_,R1):-S=='-',R1 = S.
