@@ -20,8 +20,24 @@ crearTablero:-
 					write("PC tablero"),nl,
 					mostrarTablero(X),
 					write('10 proyectiles disponibles: '),nl,
-					dispara(10,T).
-					
+					write("Inicias tú o PC? Tú:2 PC:1"),nl,
+					read(Usuario),
+					%T= usuario X=PC
+					((Usuario=1),juegaPC(10,T,X),juegaUsuario(10,T,X)).
+
+juegaPC(0,_,_):-write('Se terminaron las balas'),nl.
+juegaPC(C,T,X):-C1 is C-1,
+	write(C),
+	dispara(T,T1),
+	disparaPC(X,X1),
+	juegaPC(C1,T1,X1).
+
+juegaUsuario(0,_,_):-write('Se terminaron las balas'),nl.
+juegaUsuario(C,T,X):-C1 is C-1,
+	disparaPC(T,T1),
+	dispara(X,X1),
+	juegaUsuario(C1,T1,X1).
+				
 %------------ Crea tablero inicial (todas las posiciones son agua) ------------%
 tableroInicial(M,N,T):-crearT_aux(M,N,[],T), mostrarTablero(T).
 crearT_aux(_,0,A,A).
@@ -63,40 +79,17 @@ generarTableroPC(Entrada,Salida):-
 
 %------------------ función para que se dispare -----------------------%
 
-dispara(0,_).
-dispara(C,T):-
-	C1 is C-1,
-	(C == 0 ->  
-		write('Se terminaron las balas'); 
-		write('Fila: '), read(Fil),
-		write('Columna: '), read(Col),
-		(Fil == 2 -> 
-			(Col == 4 -> 
-				herido(Fil,Col,C1) ; 
-				(Col == 5 -> 
-					herido(Fil,Col,C1); 
-				falla(Fil,Col,T,T1))
-			);
-			(Fil == 5 -> 
-				(Col == 0 -> 
-					falla(Fil,Col,T,T1);
-					(Col == 1 -> 
-						falla(Fil,Col,T,T1);
-						(Col == 6 -> 
-							falla(Fil,Col,T,T1);
-							(Col == 9 -> 
-								falla(Fil,Col,T,T1);
-								herido(Fil,Col,C1)
-							)
-						)
-					)
-				); 
-				falla(Fil,Col,T,T1)
-			)
-		)),
-		mostrarTablero(T1),
-		dispara(C1,T1).
-		
+dispara(T,Tsalida):-
+	write('Fila: '), read(Fil),
+	write('Columna: '), read(Col),
+	colocarH(Fil,Col,1,'|',T,Tsalida),
+	mostrarTablero(Tsalida).
+
+disparaPC(T,Tsalida):-
+	write('Fila: '), read(Fil),%numeros aleatorios, que estén en el rango
+	write('Columna: '), read(Col),%numeros aleatorios, que estén en el rango
+	colocarH(Fil,Col,1,'_',T,Tsalida),
+	mostrarTablero(Tsalida).
 		
 		
 herido(A,B,Con):-
@@ -125,8 +118,8 @@ choque(S,_,R1):-R1 = S
 
 % S indica el valor a insertar en el tablero
 %funcion auxiliar para modificar valores en el tablero
-modificar_lista(0,S,[_|R],[X|R]):-choque(S,R,X),nl.
-modificar_lista(N,S,[E|R],[E|L]):- N1 is N-1, choque(S,R,X),nl,
+modificar_lista(0,S,[_|R],[X|R]):-choque(S,R,X).
+modificar_lista(N,S,[E|R],[E|L]):- N1 is N-1, choque(S,R,X),
 									modificar_lista(N1, X, R, L).
 %coloca los barcos ya sea horizontal o verticalmente 
 colocarB('h',Fini,Cini,Tam,N,L,T):- colocarH(Fini,Cini,Tam,N,L,T).
