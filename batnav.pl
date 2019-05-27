@@ -97,12 +97,12 @@ falla(Fil,Col,T,T1):-
 	write('Ni un poco cerca'),nl.
 
 %ataque contra un barco enemigo
-choque(S,[R|_],R1):-S=='|',R \= 'a',R1 = 'X',write("Term").
-choque(S,[R|_],R1):-S=='|',R == 'a',R1 = '*',write("Term").
+choque(S,[R|_],R1):-S=='|',R \= 'a',R1 = 'X'.
+choque(S,[R|_],R1):-S=='|',R == 'a',R1 = '*'.
 %ataque contra tu barco
-choque(S,_,R1):-S=='-',R1 = S,write("Term").
+choque(S,_,R1):-S=='-',R1 = S.
 %impresipon normal
-choque(S,[R|_],R1):-R1 = S,write(E),write("Term")
+choque(S,_,R1):-R1 = S
 .
 
 % S indica el valor a insertar en el tablero
