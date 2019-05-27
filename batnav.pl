@@ -85,7 +85,7 @@ dispara(T,X,Tsalida):-
 	%Le di?
 	nth0(Fil,X,Temp1),
 	nth0(Col,Temp1,Temp2),
-	(Temp2='a'->falla(Fil,Col,T,Tsalida);herido(Fil,Col,X,Tsalida)),
+	(Temp2='a'->falla(Fil,Col,T,Tsalida);herido(Fil,Col,T,Tsalida)),
 	mostrarTablero(Tsalida).
 
 disparaPC(T,X,Tsalida):-
@@ -96,7 +96,7 @@ disparaPC(T,X,Tsalida):-
 	write('Columna: '), random(0,N,Col),write(Col),nl,%numeros aleatorios, que estén en el rango
 	nth0(Fil,T,Temp1),
 	nth0(Col,Temp1,Temp2),
-	(Temp2='a'->falla(Fil,Col,X,Tsalida);herido(Fil,Col,T,Tsalida)).
+	(Temp2='a'->falla(Fil,Col,X,Tsalida);heridoPC(Fil,Col,T,Tsalida)).
 	%mostrarTablero(Tsalida).
 
 		
@@ -108,6 +108,14 @@ herido(Fil,Col,T,T1):-
 	(Pun = 8->write("Has ganado");nl),
 	colocarH(Fil,Col,1,'-',T,T1).
 	
+heridoPC(Fil,Col,T,T1):-
+	nb_getval(pc, Puntos),
+	Pun is Puntos+1,
+	nb_setval(pc, Pun),
+	write('le he dado a uno de tus barcos, tengo: '),write(Pun),write(" Puntos"),nl,
+	(Pun = 8->write("Has ganado");nl),
+	colocarH(Fil,Col,1,'-',T,T1).
+
 falla(Fil,Col,T,T1):-
 	colocarH(Fil,Col,1,'|',T,T1),
 	write('Ni un poco cerca'),nl.
